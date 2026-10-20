@@ -1,0 +1,10 @@
+import { describe, it, expect } from "vitest";
+import { decide, mulberry32, PROFILE, type PermittedQuestion } from "../src/botbrain.js";
+import { generateMode, type Mode } from "../src/questions.js";
+const accuracy = (mode: Exclude<Mode, "daily">, d: "easy" | "medium" | "hard") => { let ok = 0, n = 0, ms = 0; for (let s = 1; s <= 120; s++) { const rng = mulberry32(s * 7); for (const q of generateMode(mode, 1_000_000 + s)) { const p: PermittedQuestion = { type: q.type, prompt: q.prompt, options: q.options }; const r = decide(p, d, rng); n++; ms += r.ms; if (r.choice === q.correct) ok++; } } return { acc: ok / n, ms: ms / n }; };
+describe("BotBrain", () => {
+  it("is deterministic for a seed", () => { const q = generateMode("math", 1_000_001)[0]; const p = { type: q.type, prompt: q.prompt, options: q.options }; expect(decide(p, "medium", mulberry32(5))).toEqual(decide(p, "medium", mulberry32(5))); });
+  for (const m of ["math", "scramble", "pattern", "oddone", "memory", "trivia", "emoji", "riddle"] as const) it(`${m}: harder bots are more accurate and faster, none perfect`, () => { const e = accuracy(m, "easy"), md = accuracy(m, "medium"), h = accuracy(m, "hard"); expect(h.acc).toBeGreaterThan(e.acc); expect(h.ms).toBeLessThan(e.ms); expect(h.acc).toBeLessThan(1); expect(e.acc).toBeGreaterThan(0.2); expect(md.acc).toBeGreaterThanOrEqual(e.acc - 0.05); });
+  it("never receives the answer key: PermittedQuestion has no answer fields and decisions stay within the options", () => { const q = { type: "math", prompt: "2 + 2 = ?", options: ["4", "5", "6", "7"] }; const d = decide(q, "hard", mulberry32(1)); expect(d.choice).toBeGreaterThanOrEqual(0); expect(d.choice).toBeLessThan(4); expect(Object.keys(q)).not.toContain("correct"); });
+  it("response times stay inside each profile's window", () => { for (const d of ["easy", "medium", "hard"] as const) for (let s = 1; s < 100; s++) { const r = decide({ type: "math", prompt: "9 + 9 = ?", options: ["18", "17", "19", "16"] }, d, mulberry32(s)); expect(r.ms).toBeGreaterThanOrEqual(PROFILE[d].min); expect(r.ms).toBeLessThanOrEqual(PROFILE[d].max); } });
+});

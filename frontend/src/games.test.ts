@@ -1,0 +1,7 @@
+import { describe, it, expect } from "vitest"; import { existsSync, readFileSync } from "node:fs"; import { GAMES, FILTERS } from "./games";
+describe("game catalogue", () => {
+  it("has 13 games with unique ids and local, existing, valid SVG covers", () => { expect(GAMES).toHaveLength(13); expect(new Set(GAMES.map((g) => g.id)).size).toBe(13); expect(new Set(GAMES.map((g) => g.image)).size).toBe(13);
+    for (const g of GAMES) { expect(g.image).toMatch(/^\/games\/[a-z-]+\.svg$/); expect(existsSync(`public${g.image}`), g.id).toBe(true); const svg = readFileSync(`public${g.image}`, "utf8"); expect(svg.startsWith("<svg")).toBe(true); expect(svg.replace("http://www.w3.org/2000/svg", "")).not.toMatch(/https?:/); expect(g.alt.length).toBeGreaterThan(15); } });
+  it("modes match their routes (no fake modes)", () => { for (const g of GAMES) { for (const m of g.modes) expect(g.routes[m], `${g.id}:${m}`).toBeTruthy(); for (const k of Object.keys(g.routes)) expect(g.modes).toContain(k); expect(g.botSupport).toBe(g.modes.includes("bots")); } });
+  it("every filter shows only games that really support it", () => { for (const f of FILTERS) for (const g of GAMES.filter(f.test)) { if (f.id === "solo") expect(g.routes.solo).toBeTruthy(); if (f.id === "bots") expect(g.routes.bots).toBeTruthy(); if (f.id === "friends") expect(g.routes.friends).toBeTruthy(); } expect(GAMES.filter(FILTERS.find((f) => f.id === "social")!.test).map((g) => g.id)).toEqual(["saboteur"]); });
+});

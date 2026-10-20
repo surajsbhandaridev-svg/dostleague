@@ -1,0 +1,4 @@
+{"name":"@dostleague/backend","version":"0.1.0","type":"module","private":true,
+"scripts":{"dev":"npm run build -w @dostleague/shared && tsx watch --env-file=.env src/index.ts","build":"npm run build -w @dostleague/shared && tsc","start":"node dist/src/index.js","test":"npm run build -w @dostleague/shared && vitest run","db:migrate":"npm --prefix .. run build --workspace=@dostleague/shared && tsx --env-file=.env scripts/migrate.ts","db:seed":"npm --prefix .. run build --workspace=@dostleague/shared && tsx --env-file=.env scripts/seed.ts","seed:check":"tsx scripts/check.ts"},
+"dependencies":{"@dostleague/shared":"*","cors":"^2.8.5","express":"^4.19.2","helmet":"^7.1.0","pg":"^8.12.0","socket.io":"^4.7.5","zod":"^3.23.8"},
+"devDependencies":{"@types/cors":"^2.8.17","@types/express":"^4.17.21","@types/node":"^20.14.0","@types/pg":"^8.11.6","socket.io-client":"^4.7.5","supertest":"^7.0.0","tsx":"^4.16.0","typescript":"^5.5.0","vitest":"^2.0.0"}}
