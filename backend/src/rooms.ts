@@ -91,7 +91,7 @@ export function attachRooms(io: Server, repo: Repo, secret: string, cfg: RoomCfg
       if (mine()) fail("already_in_room");
       const t = now(); const hist = (creates.get(me.id) ?? []).filter((x) => t - x < 60_000); if (hist.length >= 5) fail("rate_limited"); creates.set(me.id, [...hist, t]);
       let code = ""; do { code = Array.from({ length: 6 }, () => ALPHABET[randomInt(ALPHABET.length)]).join(""); } while (rooms.has(code));
-      const r: Room = { code, hostId: me.id, status: "waiting", mode: "daily", max: maxPlayers, players: new Map(), touched: t, matchId: randomUUID(), packId: "", startedAt: 0, qs: [], idx: 0, deadline: 0, finalized: false };
+      const r: Room = { code, hostId: me.id, status: "waiting", mode: "daily", max: maxPlayers ?? 2, players: new Map(), touched: t, matchId: randomUUID(), packId: "", startedAt: 0, qs: [], idx: 0, deadline: 0, finalized: false };
       r.players.set(me.id, { player: me, ready: true, sid: socket.id, score: 0, correct: 0, ms: 0, answers: new Map() }); rooms.set(code, r); inRoom.set(me.id, code); socket.join(code); push(r); return { code };
     });
     on("room:join", code6, ({ code }) => {
