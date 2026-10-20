@@ -59,7 +59,7 @@ export default function Daily({ challenge, practice, mode, bots, difficulty }: {
           {msg && <p role="alert" className="form-err mt-3">{msg}</p>}
         </div>
       </div>
-      {standings.length > 1 && phase !== "done" && <StandingsList rows={standings} />}<aside className="daily-side-panel"><div className="daily-side-icon"><Trophy size={23} /></div><span className="section-kicker">YOUR PROGRESS</span><h2>Keep the streak alive.</h2><p>Play the daily challenge, review the answers and come back tomorrow to beat your score.</p><div className="side-progress-line"><span style={{ width: `${progress}%` }} /></div><div className="side-progress-label"><span>Questions completed</span><strong>{idx + (phase === "reveal" ? 1 : 0)} / {total}</strong></div><div className="side-tip"><Zap size={16} /><span>Accuracy first. Speed comes after.</span></div></aside>
+      {standings.length > 1 && <StandingsList rows={standings} />}<aside className="daily-side-panel"><div className="daily-side-icon"><Trophy size={23} /></div><span className="section-kicker">YOUR PROGRESS</span><h2>Keep the streak alive.</h2><p>Play the daily challenge, review the answers and come back tomorrow to beat your score.</p><div className="side-progress-line"><span style={{ width: `${progress}%` }} /></div><div className="side-progress-label"><span>Questions completed</span><strong>{idx + (phase === "reveal" ? 1 : 0)} / {total}</strong></div><div className="side-tip"><Zap size={16} /><span>Accuracy first. Speed comes after.</span></div></aside>
     </section>}
 
     {phase === "done" && <section className="daily-results">
